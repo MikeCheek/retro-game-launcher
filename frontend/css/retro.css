@@ -1030,6 +1030,14 @@ body {
   display: flex;
 }
 
+.touch-controls.manually-hidden {
+  display: none !important;
+}
+
+.pixel-command-btn.hidden {
+  display: none;
+}
+
 .touch-dpad {
   display: grid;
   grid-template-columns: repeat(3, 50px);

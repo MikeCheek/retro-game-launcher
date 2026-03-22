@@ -51,6 +51,9 @@ const app = {
     // Initialize upload modal
     ui.setupUploadModal();
 
+    // Initialize touch controls show/hide toggle
+    ui.initTouchControlsToggle();
+
     // Initialize autosave settings and toggle wiring
     ui.initAutosaveSettings();
 

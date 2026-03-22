@@ -13,6 +13,8 @@ const ui = {
   autosaveIntervalMs: 60_000,
   autosaveSlotNumber: 0,
   autosaveTimerId: null,
+  touchControlsHiddenKey: 'touchControlsHidden',
+  touchControlsHidden: false,
 
   setStatus(message) {
     const statusLine = document.getElementById('statusLine');
@@ -35,6 +37,53 @@ const ui = {
         this.setAutosaveEnabled(Boolean(event.target.checked), { persist: true, notify: true });
       });
     }
+  },
+
+  initTouchControlsToggle() {
+    const raw = localStorage.getItem(this.touchControlsHiddenKey);
+    this.touchControlsHidden = raw === 'true';
+
+    const hasTouch =
+      ('ontouchstart' in window && typeof window !== 'undefined') ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0;
+
+    const toggleButton = document.getElementById('touchToggleButton');
+    if (toggleButton && !hasTouch) {
+      toggleButton.classList.add('hidden');
+    }
+
+    this.applyTouchControlsVisibility();
+    this.updateTouchToggleButtonLabel();
+  },
+
+  applyTouchControlsVisibility() {
+    const touchControls = document.getElementById('touch-controls');
+    if (!touchControls) return;
+
+    if (this.touchControlsHidden) {
+      touchControls.classList.add('manually-hidden');
+      touchControls.classList.remove('show');
+    } else {
+      touchControls.classList.remove('manually-hidden');
+      if (window.inputManager && typeof window.inputManager.showTouchControls === 'function') {
+        window.inputManager.showTouchControls();
+      }
+    }
+  },
+
+  updateTouchToggleButtonLabel() {
+    const toggleButton = document.getElementById('touchToggleButton');
+    if (!toggleButton) return;
+    toggleButton.textContent = this.touchControlsHidden ? '[SHOW TOUCH]' : '[HIDE TOUCH]';
+  },
+
+  toggleTouchControlsVisibility() {
+    this.touchControlsHidden = !this.touchControlsHidden;
+    localStorage.setItem(this.touchControlsHiddenKey, String(this.touchControlsHidden));
+    this.applyTouchControlsVisibility();
+    this.updateTouchToggleButtonLabel();
+    showNotification(this.touchControlsHidden ? 'Touch controls hidden' : 'Touch controls shown', 'info');
   },
 
   async ensureAutosavePreference() {
@@ -659,6 +708,10 @@ function closeResumePrompt() {
 
 function startNewGameFromPrompt() {
   ui.resolveResumePrompt({ mode: 'new' });
+}
+
+function toggleTouchControlsSection() {
+  ui.toggleTouchControlsVisibility();
 }
 
 function handleDpadInput(direction) {

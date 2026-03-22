@@ -259,10 +259,11 @@ class InputManager {
     // 1. Touch devices
     // 2. Not in fullscreen player mode
     // 3. Portrait orientation OR mobile
-    const playerView = document.getElementById('player-view');
+    const playerView = document.getElementById('playerView');
     const isPlayerViewActive = playerView?.classList.contains('active');
+    const isManuallyHidden = touchControls.classList.contains('manually-hidden');
 
-    if (this.isTouchDevice && !isPlayerViewActive) {
+    if (this.isTouchDevice && !isPlayerViewActive && !isManuallyHidden) {
       touchControls.classList.add('show');
     } else {
       touchControls.classList.remove('show');
