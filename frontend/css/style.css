@@ -1,0 +1,247 @@
+/* Additional retro styling */
+
+.pixel-input::placeholder {
+  color: rgba(224, 224, 224, 0.5);
+}
+
+/* Animations */
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 10px;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 212, 255, 1);
+  }
+}
+
+.glow-text {
+  animation: glow 2s infinite;
+}
+
+/* 8-bit style borders */
+.pixel-border {
+  border-image: linear-gradient(
+      45deg,
+      var(--color-accent) 0%,
+      #16c784 25%,
+      var(--color-accent) 50%,
+      #16c784 75%,
+      var(--color-accent) 100%
+    )
+    1;
+}
+
+/* LED indicators */
+.led {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.led.active {
+  background: cylindrical-gradient(circle at 30% 30%, #ffff00, #ffcc00);
+  box-shadow: 0 0 10px #ffcc00;
+}
+
+.led.inactive {
+  background: #333;
+  box-shadow: none;
+}
+
+/* Retro text glow */
+.retro-glow {
+  color: var(--color-accent);
+  text-shadow:
+    0 0 5px rgba(0, 212, 255, 0.5),
+    0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* CRT screen effect */
+.crt-effect {
+  position: relative;
+}
+
+.crt-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
+  pointer-events: none;
+}
+
+/* Pressed state for buttons */
+.pixel-button.pressed {
+  transform: inset;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Disabled state */
+.pixel-button:disabled,
+.pixel-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pixel-button:disabled:hover,
+.pixel-button.disabled:hover {
+  transform: none;
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+/* Success/Error states */
+.alert {
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  border-left: 4px solid;
+}
+
+.alert.success {
+  background: rgba(76, 175, 80, 0.2);
+  border-left-color: #4caf50;
+  color: #81c784;
+}
+
+.alert.error {
+  background: rgba(244, 67, 54, 0.2);
+  border-left-color: #f44336;
+  color: #ef5350;
+}
+
+.alert.info {
+  background: rgba(33, 150, 243, 0.2);
+  border-left-color: #2196f3;
+  color: #64b5f6;
+}
+
+/* Tooltip */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: var(--color-accent);
+  color: #000;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -50px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Grid layout helpers */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+}
+
+/* Flex helpers */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-small {
+  gap: 8px;
+}
+.gap-medium {
+  gap: 15px;
+}
+.gap-large {
+  gap: 25px;
+}
+
+/* Spacing utilities */
+.mt-1 {
+  margin-top: 10px;
+}
+.mt-2 {
+  margin-top: 20px;
+}
+.mt-3 {
+  margin-top: 30px;
+}
+
+.mb-1 {
+  margin-bottom: 10px;
+}
+.mb-2 {
+  margin-bottom: 20px;
+}
+.mb-3 {
+  margin-bottom: 30px;
+}
+
+.p-1 {
+  padding: 10px;
+}
+.p-2 {
+  padding: 20px;
+}
+.p-3 {
+  padding: 30px;
+}

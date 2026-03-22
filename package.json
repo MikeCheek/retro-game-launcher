@@ -1,0 +1,38 @@
+{
+  "name": "retro-game-launcher",
+  "version": "1.0.0",
+  "description": "A retro game launcher web application with ROM library and save state management",
+  "main": "backend/app.js",
+  "scripts": {
+    "start": "node backend/app.js",
+    "dev": "nodemon backend/app.js",
+    "pm2:start": "npx pm2 start ecosystem.config.cjs",
+    "pm2:restart": "npx pm2 restart ecosystem.config.cjs",
+    "pm2:stop": "npx pm2 stop ecosystem.config.cjs",
+    "pm2:delete": "npx pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "npx pm2 logs retro-game-launcher",
+    "pm2:status": "npx pm2 status"
+  },
+  "keywords": [
+    "retro",
+    "games",
+    "emulator",
+    "launcher",
+    "roms"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "multer": "^1.4.5-lts.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "pm2": "^5.4.3"
+  }
+}

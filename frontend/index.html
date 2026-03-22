@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎮 Retro Game Launcher</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%231a1a2e' width='100' height='100'/><circle cx='50' cy='50' r='40' fill='%2300d4ff'/><text x='50' y='60' font-family='monospace' font-size='50' fill='%231a1a2e' text-anchor='middle' font-weight='bold'>▶</text></svg>"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/retro.css" />
+  </head>
+  <body>
+    <div id="appShell" class="app-shell booting">
+      <div class="boot-overlay">
+        <div class="boot-text-wrap">
+          <p class="boot-brand">RETRO LAUNCHER BIOS v1.0</p>
+          <p class="boot-line">Initializing cartridge bus...</p>
+          <p class="boot-line">Calibrating CRT phosphor matrix...</p>
+          <p class="boot-line">Loading game library subsystem...</p>
+        </div>
+      </div>
+
+      <div class="retro-console crt-console">
+        <div class="crt-shell-top">
+          <p>CRT CONSOLE // RETRO LAUNCHER</p>
+          <div class="shell-actions">
+            <button class="shell-button" onclick="startGame()">START</button>
+            <button class="shell-button" onclick="toggleLibrary()">LIBRARY</button>
+            <button class="shell-button" onclick="openSettingsModal()">SETTINGS</button>
+            <label class="speed-control">
+              TURBO
+              <input type="checkbox" disabled />
+            </label>
+          </div>
+        </div>
+
+      <!-- Screen/Monitor -->
+      <div class="monitor crt-frame">
+        <div class="screen crt-glass">
+          <div class="crt-noise"></div>
+          <div class="screen-content">
+            <div class="crt-hud">
+              <span>USER: DEFAULT</span>
+              <span>STATUS: ONLINE</span>
+            </div>
+            <!-- Main Menu View -->
+            <div id="mainView" class="view active">
+              <div class="menu-view crt-screen-title">
+                <div class="title-screen">
+                  <h1 class="pixel-title">RETRO GAME<br />LAUNCHER</h1>
+                  <p>Boot cartridge and continue your run.</p>
+                  <div class="blinking-text">Press START</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Library View -->
+            <div id="libraryView" class="view hidden selector-overlay">
+              <div class="library-header">
+                <h2 class="pixel-text">GAME LIBRARY</h2>
+                <div class="library-stats"><span id="romCount">0</span> GAMES</div>
+              </div>
+
+              <div class="search-container">
+                <input type="text" id="searchInput" class="pixel-input" placeholder="SEARCH GAMES..." />
+              </div>
+
+              <div class="games-grid" id="gamesGrid">
+                <!-- Games will be loaded here -->
+              </div>
+
+              <button class="pixel-button btn-upload" onclick="openUploadModal()">[UPLOAD ROM]</button>
+            </div>
+
+            <!-- Player View -->
+            <div id="playerView" class="view hidden player-full-screen">
+              <!-- Game canvas takes up full available space -->
+              <div class="game-screen-wrapper">
+                <div class="player-header">
+                  <span id="gameTitle" class="pixel-text">LOADING...</span>
+                  <div class="player-overlay-controls">
+                    <button class="mini-button" title="Save (Q)" onclick="toggleSaveMenu()">💾</button>
+                    <button class="mini-button" title="Load (W)" onclick="toggleLoadMenu()">📂</button>
+                    <button class="mini-button" title="Back (ESC)" onclick="backToLibrary()">⏮</button>
+                  </div>
+                </div>
+
+                <div class="emulator-container">
+                  <div id="emulatorHost" class="emulator-host hidden"></div>
+                  <canvas id="gameCanvas" width="320" height="240"></canvas>
+
+                  <div id="inScreenHud" class="in-screen-hud">
+                    <div class="hud-row hud-title-row">
+                      <span class="pixel-tag">PLAYER MENU</span>
+                    </div>
+                    <div class="hud-row hud-commands">
+                      <span class="pixel-command">[Q] SAVE</span>
+                      <span class="pixel-command">[W] LOAD</span>
+                      <span class="pixel-command">[SPACE] PAUSE</span>
+                      <button class="pixel-command-btn" onclick="toggleGameOverlayMenu()">[MENU]</button>
+                    </div>
+                  </div>
+
+                  <div id="gameOverlayMenu" class="game-overlay-menu hidden">
+                    <div class="overlay-menu-panel">
+                      <h3 class="pixel-text">IN-GAME MENU</h3>
+                      <p class="overlay-subtitle">Manage state and session without leaving gameplay.</p>
+                      <div class="overlay-menu-actions">
+                        <button
+                          class="pixel-button"
+                          onclick="
+                            toggleSaveMenu();
+                            toggleGameOverlayMenu();
+                          "
+                        >
+                          [SAVE STATE]
+                        </button>
+                        <button
+                          class="pixel-button btn-select"
+                          onclick="
+                            toggleLoadMenu();
+                            toggleGameOverlayMenu();
+                          "
+                        >
+                          [LOAD STATE]
+                        </button>
+                        <button class="pixel-button btn-back" onclick="backToLibrary()">[EXIT TO LIBRARY]</button>
+                        <button class="pixel-button" onclick="toggleGameOverlayMenu()">[RESUME]</button>
+                      </div>
+                      <label class="autosave-toggle-row" for="autosaveToggle">
+                        <input type="checkbox" id="autosaveToggle" />
+                        <span class="pixel-text">AUTOSAVE EVERY 1 MIN (SLOT 0)</span>
+                      </label>
+                      <div class="overlay-help pixel-text">ESC: back | ENTER: start | SELECT: toggle menu</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- On-screen touch controls (visible on touch devices in menu/library) -->
+                <div id="touch-controls" class="touch-controls">
+                  <div class="touch-dpad">
+                    <button class="up" title="Up">▲</button>
+                    <button class="down" title="Down">▼</button>
+                    <button class="left" title="Left">◀</button>
+                    <button class="right" title="Right">▶</button>
+                    <button class="center" title="Center"></button>
+                  </div>
+                  <div class="touch-actions">
+                    <button class="touch-btn-a" title="A Button">A</button>
+                    <button class="touch-btn-b" title="B Button">B</button>
+                  </div>
+                  <div class="touch-menu-buttons">
+                    <button data-action="save" title="Save (Q)">💾 SAVE</button>
+                    <button data-action="load" title="Load (W)">📂 LOAD</button>
+                    <button data-action="back" title="Back (ESC)">⏮ BACK</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Slot Menu -->
+              <div id="saveSlotMenu" class="slot-menu hidden">
+                <h3 class="pixel-text">SELECT SAVE SLOT</h3>
+                <div class="slots-container" id="saveSlotsContainer">
+                  <!-- Slots will be generated -->
+                </div>
+              </div>
+
+              <!-- Load Slot Menu -->
+              <div id="loadSlotMenu" class="slot-menu hidden">
+                <h3 class="pixel-text">SELECT LOAD SLOT</h3>
+                <div class="slots-container" id="loadSlotsContainer">
+                  <!-- Slots will be generated -->
+                </div>
+              </div>
+            </div>
+            <div id="statusLine" class="status-line">SYSTEM READY</div>
+          </div>
+        </div>
+
+        <!-- Bottom Control Panel - Only visible in menu/library views -->
+        <div class="control-panel" id="controlPanel">
+          <button class="pixel-button btn-power" onclick="startGame()">[START]</button>
+          <button class="pixel-button btn-select" onclick="toggleLibrary()">[SELECT]</button>
+        </div>
+      </div>
+
+      <!-- Console Body -->
+      <div class="console-body">
+        <div class="console-branding">
+          <span class="brand-text">RETRO LAUNCHER PRO</span>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal hidden">
+      <div class="modal-content pixel-panel">
+        <h2 class="pixel-text">UPLOAD ROM</h2>
+        <div class="upload-area" id="uploadArea">
+          <p class="pixel-text">Click or drag ROM file here</p>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".nes,.snes,.smc,.gen,.md,.gb,.gbc,.gba,.z64,.n64,.bin,.iso,.cue,.zip"
+            hidden
+          />
+        </div>
+        <div id="uploadProgress" hidden>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p id="uploadStatus" class="pixel-text">Uploading...</p>
+        </div>
+        <div class="modal-buttons">
+          <button class="pixel-button" onclick="closeUploadModal()">[CANCEL]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-content pixel-panel">
+        <h2 class="pixel-text">SETTINGS</h2>
+        <div class="settings-content">
+          <div class="setting-item">
+            <label class="pixel-text">DEVICE ID:</label>
+            <input type="text" id="deviceId" class="pixel-input" readonly />
+          </div>
+          <div class="setting-item">
+            <label class="pixel-text">DEVICE NAME:</label>
+            <input type="text" id="deviceName" class="pixel-input" placeholder="e.g., My PC" />
+          </div>
+          <div class="stat-line">
+            <span id="statTotalRoms" class="pixel-text">Total ROMs: 0</span>
+          </div>
+          <div class="stat-line">
+            <span id="statTotalSize" class="pixel-text">Total Size: 0 MB</span>
+          </div>
+          <div class="stat-line">
+            <span id="statTotalSaves" class="pixel-text">Total Saves: 0</span>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button class="pixel-button" onclick="closeSettingsModal()">[CLOSE]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resume Prompt Modal -->
+    <div id="resumePromptModal" class="modal hidden">
+      <div class="modal-content pixel-panel resume-modal-content">
+        <h2 class="pixel-text">RESUME GAME?</h2>
+        <p class="resume-subtitle pixel-text">Save slots found for this game. Choose one to continue.</p>
+        <div id="resumeSlotsContainer" class="resume-slots-list"></div>
+        <div class="modal-buttons">
+          <button class="pixel-button btn-select" onclick="startNewGameFromPrompt()">[START NEW]</button>
+          <button class="pixel-button btn-back" onclick="closeResumePrompt()">[CANCEL]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio for retro sounds -->
+    <audio id="selectSound" preload="auto">
+      <source
+        src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AQACABAAZGF0YQIAAAAAAA=="
+        type="audio/wav"
+      />
+    </audio>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/emulator.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
