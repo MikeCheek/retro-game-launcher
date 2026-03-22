@@ -1,61 +1,103 @@
-const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
 const path = require('path');
+const initSqlJs = require('sql.js');
 
 const DB_PATH = path.join(__dirname, '../../data.db');
 
+let SQL;
 let db;
+let initPromise;
 
-function getDatabase() {
-  if (!db) {
-    db = new sqlite3.Database(DB_PATH, (err) => {
-      if (err) {
-        console.error('Error opening database:', err);
-      } else {
-        console.log('Connected to SQLite database');
-      }
-    });
+async function initializeEngine() {
+  if (SQL) return SQL;
+
+  SQL = await initSqlJs({
+    locateFile: (file) => path.join(__dirname, '../../node_modules/sql.js/dist', file),
+  });
+
+  return SQL;
+}
+
+function persistDatabase() {
+  if (!db) return;
+  const data = db.export();
+  fs.writeFileSync(DB_PATH, Buffer.from(data));
+}
+
+async function getDatabase() {
+  if (db) {
+    return db;
   }
-  return db;
+
+  if (!initPromise) {
+    initPromise = (async () => {
+      const SqlJs = await initializeEngine();
+
+      if (fs.existsSync(DB_PATH)) {
+        const fileBuffer = fs.readFileSync(DB_PATH);
+        db = new SqlJs.Database(fileBuffer);
+      } else {
+        db = new SqlJs.Database();
+      }
+
+      db.run('PRAGMA foreign_keys = ON');
+      console.log('Connected to SQLite database (sql.js)');
+      return db;
+    })();
+  }
+
+  return initPromise;
 }
 
 function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.run(sql, params, function (err) {
-      if (err) {
-        console.error('SQL error:', err);
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, changes: this.changes });
-      }
-    });
-  });
+  return (async () => {
+    try {
+      const database = await getDatabase();
+      database.run(sql, params);
+
+      const result = database.exec('SELECT last_insert_rowid() AS id, changes() AS changes');
+      const values = result?.[0]?.values?.[0] || [null, 0];
+
+      persistDatabase();
+      return { id: values[0], changes: values[1] };
+    } catch (err) {
+      console.error('SQL error:', err);
+      throw err;
+    }
+  })();
 }
 
 function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
+  return (async () => {
+    const database = await getDatabase();
+    const stmt = database.prepare(sql, params);
+
+    try {
+      if (!stmt.step()) {
+        return undefined;
       }
-    });
-  });
+      return stmt.getAsObject();
+    } finally {
+      stmt.free();
+    }
+  })();
 }
 
 function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
+  return (async () => {
+    const database = await getDatabase();
+    const stmt = database.prepare(sql, params);
+    const rows = [];
+
+    try {
+      while (stmt.step()) {
+        rows.push(stmt.getAsObject());
       }
-    });
-  });
+      return rows;
+    } finally {
+      stmt.free();
+    }
+  })();
 }
 
 async function initializeDatabase() {
