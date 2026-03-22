@@ -37,162 +37,162 @@
           </div>
         </div>
 
-      <!-- Screen/Monitor -->
-      <div class="monitor crt-frame">
-        <div class="screen crt-glass">
-          <div class="crt-noise"></div>
-          <div class="screen-content">
-            <div class="crt-hud">
-              <span>USER: DEFAULT</span>
-              <span>STATUS: ONLINE</span>
-            </div>
-            <!-- Main Menu View -->
-            <div id="mainView" class="view active">
-              <div class="menu-view crt-screen-title">
-                <div class="title-screen">
-                  <h1 class="pixel-title">RETRO GAME<br />LAUNCHER</h1>
-                  <p>Boot cartridge and continue your run.</p>
-                  <div class="blinking-text">Press START</div>
-                </div>
+        <!-- Screen/Monitor -->
+        <div class="monitor crt-frame">
+          <div class="screen crt-glass">
+            <div class="crt-noise"></div>
+            <div class="screen-content">
+              <div class="crt-hud">
+                <span>USER: DEFAULT</span>
+                <span>STATUS: ONLINE</span>
               </div>
-            </div>
-
-            <!-- Library View -->
-            <div id="libraryView" class="view hidden selector-overlay">
-              <div class="library-header">
-                <h2 class="pixel-text">GAME LIBRARY</h2>
-                <div class="library-stats"><span id="romCount">0</span> GAMES</div>
-              </div>
-
-              <div class="search-container">
-                <input type="text" id="searchInput" class="pixel-input" placeholder="SEARCH GAMES..." />
-              </div>
-
-              <div class="games-grid" id="gamesGrid">
-                <!-- Games will be loaded here -->
-              </div>
-
-              <button class="pixel-button btn-upload" onclick="openUploadModal()">[UPLOAD ROM]</button>
-            </div>
-
-            <!-- Player View -->
-            <div id="playerView" class="view hidden player-full-screen">
-              <!-- Game canvas takes up full available space -->
-              <div class="game-screen-wrapper">
-                <div class="player-header">
-                  <span id="gameTitle" class="pixel-text">LOADING...</span>
-                  <div class="player-overlay-controls">
-                    <button class="mini-button" title="Save (Q)" onclick="toggleSaveMenu()">💾</button>
-                    <button class="mini-button" title="Load (W)" onclick="toggleLoadMenu()">📂</button>
-                    <button class="mini-button" title="Back (ESC)" onclick="backToLibrary()">⏮</button>
+              <!-- Main Menu View -->
+              <div id="mainView" class="view active">
+                <div class="menu-view crt-screen-title">
+                  <div class="title-screen">
+                    <h1 class="pixel-title">RETRO GAME<br />LAUNCHER</h1>
+                    <p>Boot cartridge and continue your run.</p>
+                    <div class="blinking-text">Press START</div>
                   </div>
                 </div>
+              </div>
 
-                <div class="emulator-container">
-                  <div id="emulatorHost" class="emulator-host hidden"></div>
-                  <canvas id="gameCanvas" width="320" height="240"></canvas>
+              <!-- Library View -->
+              <div id="libraryView" class="view hidden selector-overlay">
+                <div class="library-header">
+                  <h2 class="pixel-text">GAME LIBRARY</h2>
+                  <div class="library-stats"><span id="romCount">0</span> GAMES</div>
+                </div>
 
-                  <div id="inScreenHud" class="in-screen-hud">
-                    <div class="hud-row hud-title-row">
-                      <span class="pixel-tag">PLAYER MENU</span>
-                    </div>
-                    <div class="hud-row hud-commands">
-                      <span class="pixel-command">[Q] SAVE</span>
-                      <span class="pixel-command">[W] LOAD</span>
-                      <span class="pixel-command">[SPACE] PAUSE</span>
-                      <button class="pixel-command-btn" onclick="toggleGameOverlayMenu()">[MENU]</button>
+                <div class="search-container">
+                  <input type="text" id="searchInput" class="pixel-input" placeholder="SEARCH GAMES..." />
+                </div>
+
+                <div class="games-grid" id="gamesGrid">
+                  <!-- Games will be loaded here -->
+                </div>
+
+                <button class="pixel-button btn-upload" onclick="openUploadModal()">[UPLOAD ROM]</button>
+              </div>
+
+              <!-- Player View -->
+              <div id="playerView" class="view hidden player-full-screen">
+                <!-- Game canvas takes up full available space -->
+                <div class="game-screen-wrapper">
+                  <div class="player-header">
+                    <span id="gameTitle" class="pixel-text">LOADING...</span>
+                    <div class="player-overlay-controls">
+                      <button class="mini-button" title="Save (Q)" onclick="toggleSaveMenu()">💾</button>
+                      <button class="mini-button" title="Load (W)" onclick="toggleLoadMenu()">📂</button>
+                      <button class="mini-button" title="Back (ESC)" onclick="backToLibrary()">⏮</button>
                     </div>
                   </div>
 
-                  <div id="gameOverlayMenu" class="game-overlay-menu hidden">
-                    <div class="overlay-menu-panel">
-                      <h3 class="pixel-text">IN-GAME MENU</h3>
-                      <p class="overlay-subtitle">Manage state and session without leaving gameplay.</p>
-                      <div class="overlay-menu-actions">
-                        <button
-                          class="pixel-button"
-                          onclick="
-                            toggleSaveMenu();
-                            toggleGameOverlayMenu();
-                          "
-                        >
-                          [SAVE STATE]
-                        </button>
-                        <button
-                          class="pixel-button btn-select"
-                          onclick="
-                            toggleLoadMenu();
-                            toggleGameOverlayMenu();
-                          "
-                        >
-                          [LOAD STATE]
-                        </button>
-                        <button class="pixel-button btn-back" onclick="backToLibrary()">[EXIT TO LIBRARY]</button>
-                        <button class="pixel-button" onclick="toggleGameOverlayMenu()">[RESUME]</button>
+                  <div class="emulator-container">
+                    <div id="emulatorHost" class="emulator-host hidden"></div>
+                    <canvas id="gameCanvas" width="320" height="240"></canvas>
+
+                    <div id="inScreenHud" class="in-screen-hud">
+                      <div class="hud-row hud-title-row">
+                        <span class="pixel-tag">PLAYER MENU</span>
                       </div>
-                      <label class="autosave-toggle-row" for="autosaveToggle">
-                        <input type="checkbox" id="autosaveToggle" />
-                        <span class="pixel-text">AUTOSAVE EVERY 1 MIN (SLOT 0)</span>
-                      </label>
-                      <div class="overlay-help pixel-text">ESC: back | ENTER: start | SELECT: toggle menu</div>
+                      <div class="hud-row hud-commands">
+                        <span class="pixel-command">[Q] SAVE</span>
+                        <span class="pixel-command">[W] LOAD</span>
+                        <span class="pixel-command">[SPACE] PAUSE</span>
+                        <button class="pixel-command-btn" onclick="toggleGameOverlayMenu()">[MENU]</button>
+                      </div>
+                    </div>
+
+                    <div id="gameOverlayMenu" class="game-overlay-menu hidden">
+                      <div class="overlay-menu-panel">
+                        <h3 class="pixel-text">IN-GAME MENU</h3>
+                        <p class="overlay-subtitle">Manage state and session without leaving gameplay.</p>
+                        <div class="overlay-menu-actions">
+                          <button
+                            class="pixel-button"
+                            onclick="
+                              toggleSaveMenu();
+                              toggleGameOverlayMenu();
+                            "
+                          >
+                            [SAVE STATE]
+                          </button>
+                          <button
+                            class="pixel-button btn-select"
+                            onclick="
+                              toggleLoadMenu();
+                              toggleGameOverlayMenu();
+                            "
+                          >
+                            [LOAD STATE]
+                          </button>
+                          <button class="pixel-button btn-back" onclick="backToLibrary()">[EXIT TO LIBRARY]</button>
+                          <button class="pixel-button" onclick="toggleGameOverlayMenu()">[RESUME]</button>
+                        </div>
+                        <label class="autosave-toggle-row" for="autosaveToggle">
+                          <input type="checkbox" id="autosaveToggle" />
+                          <span class="pixel-text">AUTOSAVE EVERY 1 MIN (SLOT 0)</span>
+                        </label>
+                        <div class="overlay-help pixel-text">ESC: back | ENTER: start | SELECT: toggle menu</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- On-screen touch controls (visible on touch devices in menu/library) -->
+                  <div id="touch-controls" class="touch-controls">
+                    <div class="touch-dpad">
+                      <button class="up" title="Up">▲</button>
+                      <button class="down" title="Down">▼</button>
+                      <button class="left" title="Left">◀</button>
+                      <button class="right" title="Right">▶</button>
+                      <button class="center" title="Center"></button>
+                    </div>
+                    <div class="touch-actions">
+                      <button class="touch-btn-a" title="A Button">A</button>
+                      <button class="touch-btn-b" title="B Button">B</button>
+                    </div>
+                    <div class="touch-menu-buttons">
+                      <button data-action="save" title="Save (Q)">💾 SAVE</button>
+                      <button data-action="load" title="Load (W)">📂 LOAD</button>
+                      <button data-action="back" title="Back (ESC)">⏮ BACK</button>
                     </div>
                   </div>
                 </div>
 
-                <!-- On-screen touch controls (visible on touch devices in menu/library) -->
-                <div id="touch-controls" class="touch-controls">
-                  <div class="touch-dpad">
-                    <button class="up" title="Up">▲</button>
-                    <button class="down" title="Down">▼</button>
-                    <button class="left" title="Left">◀</button>
-                    <button class="right" title="Right">▶</button>
-                    <button class="center" title="Center"></button>
-                  </div>
-                  <div class="touch-actions">
-                    <button class="touch-btn-a" title="A Button">A</button>
-                    <button class="touch-btn-b" title="B Button">B</button>
-                  </div>
-                  <div class="touch-menu-buttons">
-                    <button data-action="save" title="Save (Q)">💾 SAVE</button>
-                    <button data-action="load" title="Load (W)">📂 LOAD</button>
-                    <button data-action="back" title="Back (ESC)">⏮ BACK</button>
+                <!-- Save Slot Menu -->
+                <div id="saveSlotMenu" class="slot-menu hidden">
+                  <h3 class="pixel-text">SELECT SAVE SLOT</h3>
+                  <div class="slots-container" id="saveSlotsContainer">
+                    <!-- Slots will be generated -->
                   </div>
                 </div>
-              </div>
 
-              <!-- Save Slot Menu -->
-              <div id="saveSlotMenu" class="slot-menu hidden">
-                <h3 class="pixel-text">SELECT SAVE SLOT</h3>
-                <div class="slots-container" id="saveSlotsContainer">
-                  <!-- Slots will be generated -->
+                <!-- Load Slot Menu -->
+                <div id="loadSlotMenu" class="slot-menu hidden">
+                  <h3 class="pixel-text">SELECT LOAD SLOT</h3>
+                  <div class="slots-container" id="loadSlotsContainer">
+                    <!-- Slots will be generated -->
+                  </div>
                 </div>
               </div>
-
-              <!-- Load Slot Menu -->
-              <div id="loadSlotMenu" class="slot-menu hidden">
-                <h3 class="pixel-text">SELECT LOAD SLOT</h3>
-                <div class="slots-container" id="loadSlotsContainer">
-                  <!-- Slots will be generated -->
-                </div>
-              </div>
+              <div id="statusLine" class="status-line">SYSTEM READY</div>
             </div>
-            <div id="statusLine" class="status-line">SYSTEM READY</div>
+          </div>
+
+          <!-- Bottom Control Panel - Only visible in menu/library views -->
+          <div class="control-panel" id="controlPanel">
+            <button class="pixel-button btn-power" onclick="startGame()">[START]</button>
+            <button class="pixel-button btn-select" onclick="toggleLibrary()">[SELECT]</button>
           </div>
         </div>
 
-        <!-- Bottom Control Panel - Only visible in menu/library views -->
-        <div class="control-panel" id="controlPanel">
-          <button class="pixel-button btn-power" onclick="startGame()">[START]</button>
-          <button class="pixel-button btn-select" onclick="toggleLibrary()">[SELECT]</button>
+        <!-- Console Body -->
+        <div class="console-body">
+          <div class="console-branding">
+            <span class="brand-text">RETRO LAUNCHER PRO</span>
+          </div>
         </div>
-      </div>
-
-      <!-- Console Body -->
-      <div class="console-body">
-        <div class="console-branding">
-          <span class="brand-text">RETRO LAUNCHER PRO</span>
-        </div>
-      </div>
       </div>
     </div>
 
